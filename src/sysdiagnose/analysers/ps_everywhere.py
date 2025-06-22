@@ -103,7 +103,6 @@ class PsEverywhereAnalyser(BaseAnalyserInterface):
 
                 # Return all valid binary paths
                 if binary_paths:
-                    logger.debug(f"Extracted {len(binary_paths)} binary paths from tccd message")
                     return binary_paths if len(binary_paths) > 1 else binary_paths[0]
 
             except Exception as e:
@@ -146,7 +145,6 @@ class PsEverywhereAnalyser(BaseAnalyserInterface):
 
                 # Return the list of process paths if any were found
                 if process_paths:
-                    logger.debug(f"Extracted {len(process_paths)} process paths from configd message")
                     return process_paths
             except Exception as e:
                 logger.debug(f"Error extracting client paths from configd SCDynamicStore: {e}")
