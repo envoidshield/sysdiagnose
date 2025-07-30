@@ -161,7 +161,9 @@ class SpindumpNoSymbolsParser(BaseParserInterface):
             process['parent'] = process['parent'].split("[", 1)[0].strip()
         except KeyError:  # some don't have a parent
             pass
-        process['uid'] = 501
+        # Don't hardcode UID - it should be parsed from the process info
+        # The parse_basic function should extract it from the "UID:" line
+        # If uid is not present in the parsed data, don't add it
         return process
 
     def parse_threads(data):
