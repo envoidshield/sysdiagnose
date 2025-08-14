@@ -43,7 +43,6 @@ class PsEverywhereAnalyser(BaseAnalyserInterface):
         """
         Extracts the euid for a specific binary_path from a message.
         Handles cases where multiple processes with different euids are mentioned.
-        
         :param message: Log message containing process information with euid
         :param binary_path: The specific binary path to extract euid for
         :return: The euid as an integer, or None if not found
@@ -51,25 +50,19 @@ class PsEverywhereAnalyser(BaseAnalyserInterface):
         try:
             # Look for pattern: binary_path=/path/to/binary followed by euid=XXX
             # We need to find the specific binary_path and then its associated euid
-            
             # Find all occurrences of the binary_path
             search_pattern = f'binary_path={binary_path}'
             start_pos = message.find(search_pattern)
-            
             if start_pos == -1:
                 return None
-                
             # From this position, look backwards to find the associated euid
             # The euid appears before binary_path in the format: euid=XXX, binary_path=YYY
-            
             # Get the substring before binary_path
             before_binary = message[:start_pos]
-            
             # Find the last occurrence of euid= before this binary_path
             euid_pos = before_binary.rfind('euid=')
             if euid_pos == -1:
                 return None
-                
             # Extract the euid value
             euid_start = euid_pos + len('euid=')
             euid_end = message.find(',', euid_start)
@@ -77,15 +70,12 @@ class PsEverywhereAnalyser(BaseAnalyserInterface):
                 euid_end = message.find(' ', euid_start)
             if euid_end == -1:
                 euid_end = message.find('}', euid_start)
-                
             if euid_end != -1:
                 euid_str = message[euid_start:euid_end].strip()
             else:
                 euid_str = message[euid_start:].strip()
-                
             # Convert to integer
             return int(euid_str)
-            
         except (ValueError, AttributeError) as e:
             logger.debug(f"Error extracting euid for binary {binary_path}: {e}")
             return None
@@ -117,7 +107,7 @@ class PsEverywhereAnalyser(BaseAnalyserInterface):
                         path = message[process_name_start:]
                     else:
                         path = message[process_name_start:process_name_end]
-                    
+
                     return [{'path': path}]
             except Exception as e:
                 logger.debug(f"Error extracting process_name from backboardd: {e}")
@@ -127,7 +117,6 @@ class PsEverywhereAnalyser(BaseAnalyserInterface):
             try:
                 # Extract binary paths with their associated euids
                 results = {}
-
                 # Find all occurrences of binary_path= in the message
                 start_pos = 0
                 while True:
@@ -188,7 +177,7 @@ class PsEverywhereAnalyser(BaseAnalyserInterface):
                             path = message[path_start:]
                         else:
                             path = message[path_start:path_end]
-                        
+
                         return [{'path': path}]
             except Exception as e:
                 logger.debug(f"Error extracting app path from kernel mapping: {e}")
@@ -558,11 +547,11 @@ class PsEverywhereAnalyser(BaseAnalyserInterface):
         """
         # Create unique key with process and uid
         key = (name, uid)
-        
+
         # Check if this exact combination already exists
         if key in self.all_ps:
             return False
-            
+
         # For backward compatibility, also check if process exists without considering uid
         # This handles cases where uid might not be available
         for item_name, item_uid in self.all_ps:
@@ -575,7 +564,6 @@ class PsEverywhereAnalyser(BaseAnalyserInterface):
             if '::' not in item_name and item_name.split(' ')[0].endswith(name):
                 if uid is None or item_uid is None:
                     return False
-                    
         self.all_ps.add(key)
         return True
 
@@ -589,17 +577,17 @@ class PsEverywhereAnalyser(BaseAnalyserInterface):
         """
         # Create unique key with process and uid
         key = (name, uid)
-        
+
         # Check if this exact combination already exists
         if key in self.all_ps:
             return False
-            
+
         # For backward compatibility, also check if process exists without considering uid
         # This handles cases where uid might not be available
         for item_name, item_uid in self.all_ps:
             if item_name.startswith(name):
                 if uid is None or item_uid is None:
                     return False
-                    
+
         self.all_ps.add(key)
         return True
